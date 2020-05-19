@@ -1,39 +1,62 @@
 .App {
   text-align: center;
   min-height: 100vh;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-family: 'Press Start 2P';
 }
 
 .App-link {
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.table {
+  width: 700px;
+  border: 2px solid black;
+  margin: 0 auto;
+  background-color: #477148;
+  font-size: 1.5rem;
+  color: #fff;
+  line-height: 1.5;
+}
+
+.field-nums {
+  font-size: 1rem;
+}
+
+.table > div {
+  border-bottom: 1px solid gray;
+  padding: 20px 0;
+  cursor: pointer;
+}
+
+.nums {
+  display: flex;
+  width: 100%;
+}
+
+.nums div {
+  flex: 1 0 auto;
+}
+
+.dice {
+  display: flex;
+  justify-content: center;
+}
+
+.die {
+  height: 80px;
+  width: 80px;
+  line-height: 80px;
+  border: 2px solid black;
+  margin: 10px;
+  background-color: tomato;
+  opacity: 0.9;
+  border-radius: 5px;
+}
+
+.interface button {
+  font-family: "Press Start 2P";
+  padding: 10px 20px;
+  background-color: #fff;
+  border: 1px solid black;
+  cursor: pointer;
 }
