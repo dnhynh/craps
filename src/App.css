@@ -2,6 +2,7 @@
   text-align: center;
   min-height: 100vh;
   font-family: 'Press Start 2P';
+  padding: 20px;
 }
 
 .App-link {
@@ -22,22 +23,11 @@
   font-size: 1rem;
 }
 
-.table > div {
-  border-bottom: 1px solid gray;
-  padding: 20px 0;
-  cursor: pointer;
+.interface-container {
+  padding: 20px;
 }
 
-.nums {
-  display: flex;
-  width: 100%;
-}
-
-.nums div {
-  flex: 1 0 auto;
-}
-
-.dice {
+.interface {
   display: flex;
   justify-content: center;
 }
@@ -51,12 +41,4 @@
   background-color: tomato;
   opacity: 0.9;
   border-radius: 5px;
-}
-
-.interface button {
-  font-family: "Press Start 2P";
-  padding: 10px 20px;
-  background-color: #fff;
-  border: 1px solid black;
-  cursor: pointer;
 }

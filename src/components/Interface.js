@@ -1,29 +1,57 @@
-import React, {useState} from "react";
-import rollSound from "../static/roll-sound.mp3";
+import React from "react";
+import styled from "styled-components";
+import PropTypes from 'prop-types';
+
+const RollButton = styled.button`
+    font-family: "Press Start 2P";
+    padding: 10px 20px;
+    background-color: #fff;
+    border: 1px solid black;
+    cursor: pointer;
+
+    &:hover {
+        border: 2px solid black;
+    }
+`
+
+const AdjustBetButton = styled.button`
+    border-radius: 50%;
+    border: 1px solid black;
+    font-family: "Press Start 2P";
+    font-size: .5rem;
+    padding: 10px 5px;
+    cursor: pointer;
+
+    &:hover {
+        border: 2px solid black;
+    }
+`
 
 const Interface = (props) => {
-    const diceSound = new Audio(rollSound);
-    // Dice state
-    const [diceValues, setDice] = useState([Math.ceil(Math.random() * 6), Math.ceil(Math.random() * 6)])
-    const rollDice = () => {
-        setDice([Math.ceil(Math.random() * 6),Math.ceil(Math.random() * 6)])
-        setPoint(diceValues[0] + diceValues[1])
-        diceSound.play();    
-    }
-    // The Point
-    const [point, setPoint] = useState(diceValues[0] + diceValues[1])
-    // Roll Resolution
-    
     return (
-        <div className="interface">
-            <div>{point}</div>
-            <div className="dice">
-                <div className="die">{diceValues[0]}</div>
-                <div className="die">{diceValues[1]}</div>
+        <div className="interface-container">
+            <div>{props.currentRoll}</div>
+            <div className="interface">
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <p>Bet: {props.bet}</p>
+                    <AdjustBetButton>+ 5</AdjustBetButton>
+                    <AdjustBetButton>- 5</AdjustBetButton>
+                </div>
+                <div className="die">{props.dieOne}</div>
+                <div className="die">{props.dieTwo}</div>
             </div>
-            <button onClick={rollDice}>Roll Dice</button>
+            <RollButton onClick={props.rollDice}>Roll Dice</RollButton>
         </div>
     )
+}
+
+Interface.defaultProps = {
+    dieOne: 2,
+    dieTwo: 5
+}
+
+Interface.propTypes = {
+    rollDice: PropTypes.func.isRequired
 }
 
 export default Interface
