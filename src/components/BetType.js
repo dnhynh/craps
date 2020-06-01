@@ -26,8 +26,13 @@ const Wager = styled.div`
 `
 
 const BetType = (props) => {
+    
+    const placeBet = ({type, value} = {type: "", value: null}) => {
+        props.placeBet({type: props.type, value: props.value});
+    }
+
     return (
-        <BetSpace>
+        <BetSpace type={props.value} onClick={placeBet}>
             {props.wager && <Wager>{props.wager}</Wager>}
             {props.children}
         </BetSpace>

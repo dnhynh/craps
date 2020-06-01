@@ -15,11 +15,11 @@ const RollButton = styled.button`
 `
 
 const AdjustBetButton = styled.button`
-    border-radius: 50%;
     border: 1px solid black;
     font-family: "Press Start 2P";
-    font-size: .5rem;
+    font-size: .25rem;
     padding: 10px 5px;
+    margin: 0 5px;
     cursor: pointer;
 
     &:hover {
@@ -28,19 +28,32 @@ const AdjustBetButton = styled.button`
 `
 
 const Interface = (props) => {
+
+    const addTen = () => {
+        props.bank.changeWager(10)
+    }
+
+    const minusTen = () => {
+        props.bank.changeWager(-10)
+    }
+
     return (
         <div className="interface-container">
-            <div>{props.currentRoll}</div>
-            <div className="interface">
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <p>Bet: {props.bet}</p>
-                    <AdjustBetButton>+ 5</AdjustBetButton>
-                    <AdjustBetButton>- 5</AdjustBetButton>
-                </div>
-                <div className="die">{props.dieOne}</div>
-                <div className="die">{props.dieTwo}</div>
+            <div>
+                <p>Point: {props.point}</p>
+                <p>Current Roll: {props.dice.total}</p>
             </div>
-            <RollButton onClick={props.rollDice}>Roll Dice</RollButton>
+            <div className="interface">
+                <div style={{display: "flex", alignItems: "center"}}>
+                    <p style={{marginRight: "10px"}}>ChipStack: {props.bank.chips}</p>
+                    <p style={{marginRight: "10px"}}>Bet: {props.bank.wager}</p>
+                    <AdjustBetButton onClick={minusTen}>- 10</AdjustBetButton>
+                    <AdjustBetButton onClick={addTen}>+ 10</AdjustBetButton>
+                </div>
+                <div className="die">{props.dice.first}</div>
+                <div className="die">{props.dice.second}</div>
+            </div>
+            <RollButton onClick={props.roll}>Roll Dice</RollButton>
         </div>
     )
 }
@@ -51,7 +64,7 @@ Interface.defaultProps = {
 }
 
 Interface.propTypes = {
-    rollDice: PropTypes.func.isRequired
+    dice: PropTypes.object.isRequired
 }
 
 export default Interface

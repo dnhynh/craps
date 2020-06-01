@@ -1,8 +1,9 @@
-import React, {useState, useLayoutEffect} from "react"
+import React, {useState, useEffect, useLayoutEffect} from "react"
 import Interface from "./Interface"
 import rollSound from "../static/roll-sound.mp3"
 import styled from "styled-components"
 import BetType from "./BetType"
+import NumBets from "./NumBets"
 
 const NumsRow = styled.div`
     display: flex;
@@ -27,15 +28,7 @@ const Craps = () => {
     //     },
     //     odds: null
     // })
-    // const [chipStack, setChipStack] = useState(1000)
-    // const [wager, setWager] = useState(5)
-    const [point, setPoint] = useState(null)
-    const [dice, setDice] = useState({
-        first: null,
-        second: null,
-        total: null,
-        turn: 0
-    })
+
     const rollDice = () => {
         rs.play()
         const firstDie = Math.ceil(Math.random() * 6)
@@ -51,6 +44,40 @@ const Craps = () => {
         })
     }
 
+    const [point, setPoint] = useState(null)
+    const [dice, setDice] = useState({
+        first: null,
+        second: null,
+        total: null,
+        turn: 0
+    })
+
+    const placeBet = (value) => {
+        console.log(value)
+    }
+
+    const adjustBet = (value) => {
+        console.log(`Chips: ${bank.chips} Wager: ${bank.wager} Value: ${value}`)
+        setBank((prevBank) => {
+            if(prevBank.wager + value <= prevBank.chips && prevBank.wager + value > 0) {
+                const newBank = {
+                    ...prevBank, 
+                    wager: prevBank.wager + value
+                }
+                return newBank
+            }
+            else {
+                return prevBank
+            }
+        })
+    }
+
+    const [bank, setBank] = useState({
+        chips: 30,
+        wager: 10,
+        changeWager: adjustBet
+    })
+
     useLayoutEffect(() => {
         // Initial Roll
         if(!point) {
@@ -63,7 +90,6 @@ const Craps = () => {
                 setPoint(null)
             }
             else {
-                window.alert('else')
                 setPoint(dice.total)
             }
         }
@@ -80,28 +106,27 @@ const Craps = () => {
         }
     }, [dice])
 
+    useEffect(() => {
+        console.log(bank)
+    }, [bank])
+
     return (
         <>
             <div className="game-container">
                 <div className="table">
                     <NumsRow>
-                        <BetType>10</BetType>
-                        <BetType>NINE</BetType>
-                        <BetType>8</BetType>
-                        <BetType>SIX</BetType>
-                        <BetType>5</BetType>
-                        <BetType>4</BetType>
+                        <NumBets placeBet={placeBet}/>
                     </NumsRow>
                     <BetType type="field">
                         The Field
                         <p className="field-nums">2 3 4 9 10 11 12</p>
                     </BetType>
                     <BetType type="dontPass">Do not Pass</BetType>
-                    <BetType type="pass">Pass Line</BetType>
+                    <BetType type="pass" placeBet={placeBet} value="pass">Pass Line</BetType>
                     <BetType type="odds">Odds</BetType>
                 </div>
             </div>
-            <Interface dieOne={dice.first} dieTwo={dice.second} currentRoll={dice.total} rollDice={rollDice}/>
+            <Interface point={point} roll={rollDice} dice={dice} bank={bank}/>
         </>
     )
 }
