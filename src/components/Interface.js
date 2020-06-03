@@ -1,6 +1,9 @@
-import React from "react";
-import styled from "styled-components";
-import PropTypes from 'prop-types';
+import React from "react"
+import styled from "styled-components"
+import PropTypes from 'prop-types'
+import rollSound from "../static/roll_sound.mp3"
+
+const rs = new Audio(rollSound)
 
 const RollButton = styled.button`
     font-family: "Press Start 2P";
@@ -30,11 +33,16 @@ const AdjustBetButton = styled.button`
 const Interface = (props) => {
 
     const addTen = () => {
-        props.bank.changeWager(10)
+        props.changeWager(10)
     }
 
     const minusTen = () => {
-        props.bank.changeWager(-10)
+        props.changeWager(-10)
+    }
+
+    const rollDice = () => {
+        rs.play()
+        props.roll()
     }
 
     return (
@@ -53,7 +61,7 @@ const Interface = (props) => {
                 <div className="die">{props.dice.first}</div>
                 <div className="die">{props.dice.second}</div>
             </div>
-            <RollButton onClick={props.roll}>Roll Dice</RollButton>
+            <RollButton onClick={rollDice}>Roll Dice</RollButton>
         </div>
     )
 }
