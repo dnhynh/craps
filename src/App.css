@@ -32,14 +32,3 @@
   justify-content: center;
   font-size: 0.75rem;
 }
-
-.die {
-  height: 80px;
-  width: 80px;
-  line-height: 80px;
-  border: 2px solid black;
-  margin: 10px;
-  background-color: tomato;
-  opacity: 0.9;
-  border-radius: 5px;
-}

@@ -2,6 +2,7 @@ import React from "react"
 import styled from "styled-components"
 import PropTypes from 'prop-types'
 import rollSound from "../static/roll_sound.mp3"
+import Dice from "./Dice"
 
 const rs = new Audio(rollSound)
 
@@ -48,7 +49,7 @@ const Interface = (props) => {
     return (
         <div className="interface-container">
             <div>
-                <p>Point: {props.point}</p>
+                <p>Point: {props.point.value}</p>
                 <p>Current Roll: {props.dice.total}</p>
             </div>
             <div className="interface">
@@ -58,8 +59,8 @@ const Interface = (props) => {
                     <AdjustBetButton onClick={minusTen}>- 10</AdjustBetButton>
                     <AdjustBetButton onClick={addTen}>+ 10</AdjustBetButton>
                 </div>
-                <div className="die">{props.dice.first}</div>
-                <div className="die">{props.dice.second}</div>
+                <Dice value={props.dice.first} />
+                <Dice value={props.dice.second} />
             </div>
             <RollButton onClick={rollDice}>Roll Dice</RollButton>
         </div>

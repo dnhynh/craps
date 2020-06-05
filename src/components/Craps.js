@@ -6,7 +6,7 @@ import chipSound from "../static/chip_sound.mp3"
 const cs = new Audio(chipSound)
 
 const Craps = () => {
-    const [bets, setBets] = useState({
+    const emptyBoard = {
         pass: null, 
         dont: null, 
         field: null,
@@ -19,25 +19,27 @@ const Craps = () => {
             4: null
         },
         odds: null
-    })
+    }
+    const noPoint = {value: null, turn: null}
+    const [bets, setBets] = useState(emptyBoard)
 
     // Check game state and place bet if valid
     const handleBet = (bet) => {
         const {type, value} = bet
         // Pass
-        if(type === "pass" && !point) {
+        if(type === "pass" && !point.value) {
             placeBet(type)
         }
         // Dont
-        if(type === "dont" && !point) {
+        if(type === "dont" && !point.value) {
             placeBet(type)
         }
         // Odds
-        if(type === "odds" && point) {
-            
+        if(type === "odds" && point.value && bets.pass && dice.turn === point.turn) {
+            placeBet(type)
         }
         // Nums
-        if(type === "nums" && point && value !== point) {
+        if(type === "nums" && point.value && value !== point) {
             placeBet(type, value)
         }
         // Field
@@ -83,7 +85,7 @@ const Craps = () => {
         })
     }
 
-    const [point, setPoint] = useState(null)
+    const [point, setPoint] = useState({value: null, turn: null})
     const [dice, setDice] = useState({
         first: null,
         second: null,
@@ -103,9 +105,42 @@ const Craps = () => {
         }
     }
 
-    const resolveBets = (result, roll) => {
+    const resolveBets = (result) => {
+        // Track net gain or loss
+        let net = 0 - bets.pass - bets.odds - bets.dont
         //pass
+        if(result === "pass") {
+            if(bets.pass) {
+                net += bets.pass * 2 
+            }
+            if(bets.odds) {
+                
+            }
+            if(bets.dont) {
+                net -= bets.dont
+            }
+        }
         //dont
+        if(result === "dont") {
+            if(bets.pass) {
+                
+            }
+            if(bets.dont) {
+                net += bets.dont * 2
+            }
+        }
+        // Only set new bank if net greater or less than 0
+        if(net) {
+            setBank((prevBank) => {
+                const newBank = {
+                    ...prevBank,
+                    chips: prevBank.chips + net
+                }
+                return newBank
+            })
+        }
+        // Reset Board
+        setBets(emptyBoard)
         //odds
         //nums
         //field
@@ -118,30 +153,29 @@ const Craps = () => {
 
     useEffect(() => {
         // Initial Roll
-        if(!point) {
+        if(!point.value) {
             if(dice.total === 7 || dice.total === 11) {
-                window.alert('winner')
-                setPoint(null)
-                resolveBets(true, dice.total)
+                resolveBets('pass')
+                setPoint(noPoint)
             }
             else if(dice.total === 2 || dice.total === 3 || dice.total === 12) {
-                window.alert('loser')
-                setPoint(null)
                 resolveBets(false, dice.total)
+                resolveBets('dont')
+                setPoint(noPoint)
             }
             else {
-                setPoint(dice.total)
+                setPoint({value: dice.total, turn: dice.turn})
             }
         }
         // Point is Set
-        else if(point) {
-            if(dice.total === point) {
-                setPoint(null)
-                window.alert('winner')
+        else if(point.value) {
+            if(dice.total === point.value) {
+                setPoint(noPoint)
+                resolveBets('pass')
             }
             if(dice.total === 7) {
-                setPoint(null)
-                window.alert('loser')
+                resolveBets('dont')
+                setPoint(noPoint)
             }
         }
     }, // eslint-disable-next-line
