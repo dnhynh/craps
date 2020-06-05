@@ -1,8 +1,6 @@
 import React from "react"
 import styled from "styled-components"
 import PropTypes from 'prop-types'
-import chipSound from "../static/chip_sound.mp3"
-const cs = new Audio(chipSound)
 
 const BetSpace = styled.div`
     border-bottom: 1px solid gray;
@@ -33,13 +31,12 @@ const Wager = styled.div`
 
 const BetType = (props) => {
     
-    const placeBet = ({type, value} = {type: "", value: null}) => {
-        cs.play()
-        props.placeBet({type: props.type, value: props.value})
+    const handleBet = ({type, value} = {type: "", value: null}) => {
+        props.handleBet({type: props.type, value: props.value})
     }
 
     return (
-        <BetSpace type={props.value} onClick={placeBet}>
+        <BetSpace type={props.value} onClick={handleBet}>
             {props.bet && <Wager>{props.bet}</Wager>}
             {props.children}
         </BetSpace>
@@ -47,7 +44,7 @@ const BetType = (props) => {
 }
 
 BetType.propTypes = {
-    placeBet: PropTypes.func.isRequired
+    handleBet: PropTypes.func.isRequired
 }
 
 export default BetType

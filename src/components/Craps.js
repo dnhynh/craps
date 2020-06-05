@@ -1,7 +1,9 @@
-import React, {useState, useEffect, useLayoutEffect} from "react"
+import React, {useState, useEffect} from "react"
 import Interface from "./Interface"
 import BetType from "./BetType"
 import NumBets from "./NumBets"
+import chipSound from "../static/chip_sound.mp3"
+const cs = new Audio(chipSound)
 
 const Craps = () => {
     const [bets, setBets] = useState({
@@ -19,16 +21,46 @@ const Craps = () => {
         odds: null
     })
 
-    const placeBet = (bet) => {
+    // Check game state and place bet if valid
+    const handleBet = (bet) => {
         const {type, value} = bet
-        console.log(bet)
+        // Pass
+        if(type === "pass" && !point) {
+            placeBet(type)
+        }
+        // Dont
+        if(type === "dont" && !point) {
+            placeBet(type)
+        }
+        // Odds
+        if(type === "odds" && point) {
+            
+        }
+        // Nums
+        if(type === "nums" && point && value !== point) {
+            placeBet(type, value)
+        }
+        // Field
+        if(type === "field") {
+            placeBet(type)
+        }
+    }
+
+    // Helper function places bet
+    const placeBet = (type, value) => {
         if(bank.wager<= bank.chips) {
-            console.log(type)
+            cs.play()
             setBets((prevBets) => {
-                const newBets = {...prevBets}
-                newBets[type] += bank.wager
-                console.log(newBets[type])
-                return newBets
+                if(type === "nums") {
+                    const newNums = {...prevBets.nums}
+                    newNums[value] += bank.wager
+                    return {...prevBets, nums: newNums}
+                }
+                else {
+                    const newBets = {...prevBets}
+                    newBets[type] += bank.wager
+                    return newBets
+                }
             })
             setBank({
                 chips: bank.chips - bank.wager,
@@ -62,24 +94,21 @@ const Craps = () => {
     const adjustBet = (value) => {
         if(bank.wager + value <= bank.chips && bank.wager + value > 0) {
             setBank((prevBank) => {
-                    const newBank = {
-                        ...prevBank, 
-                        wager: prevBank.wager + value
-                    }
-                    return newBank
+                const newBank = {
+                    ...prevBank, 
+                    wager: prevBank.wager + value
+                }
+                return newBank
             })
         }
     }
 
     const resolveBets = (result, roll) => {
-        // Winning Roll 
-        if(result === "win") {
-            
-        }
-        // Losing Bets
-        else {
-
-        }
+        //pass
+        //dont
+        //odds
+        //nums
+        //field
     }
 
     const [bank, setBank] = useState({
@@ -87,10 +116,11 @@ const Craps = () => {
         wager: 10,
     })
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         // Initial Roll
         if(!point) {
             if(dice.total === 7 || dice.total === 11) {
+                window.alert('winner')
                 setPoint(null)
                 resolveBets(true, dice.total)
             }
@@ -117,22 +147,18 @@ const Craps = () => {
     }, // eslint-disable-next-line
     [dice])
 
-    useEffect(() => {
-        console.log(bank)
-    }, [bank])
-
     return (
         <>
             <div className="game-container">
                 <div className="table">
-                    <NumBets nums={bets.nums} placeBet={placeBet} bets={bets.nums}/>
-                    <BetType type="field" bet={bets.field} placeBet={placeBet}>
+                    <NumBets nums={bets.nums} handleBet={handleBet} bets={bets.nums}/>
+                    <BetType type="field" bet={bets.field} handleBet={handleBet}>
                         The Field
                         <p className="field-nums">2 3 4 9 10 11 12</p>
                     </BetType>
-                    <BetType type="dont" bet={bets.dont} placeBet={placeBet}>Do not Pass</BetType>
-                    <BetType type="pass" bet={bets.pass} placeBet={placeBet}>Pass Line</BetType>
-                    <BetType type="odds" bet={bets.odds} placeBet={placeBet}>Odds</BetType>
+                    <BetType type="dont" bet={bets.dont} handleBet={handleBet}>Do not Pass</BetType>
+                    <BetType type="pass" bet={bets.pass} handleBet={handleBet}>Pass Line</BetType>
+                    <BetType type="odds" bet={bets.odds} handleBet={handleBet}>Odds</BetType>
                 </div>
             </div>
             <Interface point={point} roll={rollDice} changeWager={adjustBet} dice={dice} bank={bank}/>

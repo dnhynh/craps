@@ -14,7 +14,7 @@ const NumsRow = styled.div`
 
 const NumBets = (props) => {
     const bets = nums.map((num) => (
-    <BetType key={num} placeBet={props.placeBet} type="num" value={num}>{num}</BetType>
+    <BetType key={num} handleBet={props.handleBet} bet={props.bets[num]} type="nums" value={num}>{num}</BetType>
     ))
     return (
         <NumsRow>
