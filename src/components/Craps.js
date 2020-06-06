@@ -25,51 +25,27 @@ const Craps = () => {
 
     // Check game state and place bet if valid
     const handleBet = (bet) => {
-        const {type, value} = bet
+        const {type, value, remove} = bet
         // Pass
         if(type === "pass" && !point.value) {
-            placeBet(type)
+            // If remove boolean is passed remove bet instead
+            remove ? removeBet(type) : placeBet(type)
         }
         // Dont
         if(type === "dont" && !point.value) {
-            placeBet(type)
+            remove ? removeBet(type) : placeBet(type)
         }
         // Odds
         if(type === "odds" && point.value && bets.pass && dice.turn === point.turn) {
-            placeBet(type)
+            remove ? removeBet(type) : placeBet(type)
         }
         // Nums
         if(type === "nums" && point.value && value !== point) {
-            placeBet(type, value)
+            remove ? removeBet(type, value) : placeBet(type, value)
         }
         // Field
         if(type === "field") {
-            placeBet(type)
-        }
-    }
-
-    // Check game state and remove bet if valid
-    const handleRemove = (bet) => {
-        const {type, value} = bet
-        // Pass
-        if(type === "pass" && !point.value) {
-            removeBet(type)
-        }
-        // Dont
-        if(type === "dont" && !point.value) {
-            removeBet(type)
-        }
-        // Odds
-        if(type === "odds" && point.value && bets.pass && dice.turn === point.turn) {
-            removeBet(type)
-        }
-        // Nums
-        if(type === "nums" && point.value && value !== point) {
-            removeBet(type, value)
-        }
-        // Field
-        if(type === "field") {
-            removeBet(type)
+            remove ? removeBet(type) : placeBet(type)
         }
     }
 
@@ -236,14 +212,14 @@ const Craps = () => {
         <>
             <div className="game-container">
                 <div className="table">
-                    <NumBets nums={bets.nums} handleBet={handleBet} handleRemove={handleRemove} bets={bets.nums}/>
-                    <BetType type="field" bet={bets.field} handleBet={handleBet} handleRemove={handleRemove}>
+                    <NumBets nums={bets.nums} handleBet={handleBet} bets={bets.nums}/>
+                    <BetType type="field" bet={bets.field} handleBet={handleBet}>
                         The Field
                         <p className="field-nums">2 3 4 9 10 11 12</p>
                     </BetType>
-                    <BetType type="dont" bet={bets.dont} handleBet={handleBet} handleRemove={handleRemove}>Do not Pass</BetType>
-                    <BetType type="pass" bet={bets.pass} handleBet={handleBet} handleRemove={handleRemove}>Pass Line</BetType>
-                    <BetType type="odds" bet={bets.odds} handleBet={handleBet} handleRemove={handleRemove}>Odds</BetType>
+                    <BetType type="dont" bet={bets.dont} handleBet={handleBet}>Do not Pass</BetType>
+                    <BetType type="pass" bet={bets.pass} handleBet={handleBet}>Pass Line</BetType>
+                    <BetType type="odds" bet={bets.odds} handleBet={handleBet}>Odds</BetType>
                 </div>
             </div>
             <Interface point={point} roll={rollDice} changeWager={adjustBet} dice={dice} bank={bank}/>

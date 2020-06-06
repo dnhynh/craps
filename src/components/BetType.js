@@ -37,8 +37,7 @@ const BetType = (props) => {
 
     const handleRemove = (e) => {
         e.preventDefault()
-        console.log('firing')
-        props.handleRemove({type: props.type, value: props.value} )
+        props.handleBet({type: props.type, value: props.value, remove: true})
     }
 
     return (
