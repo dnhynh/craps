@@ -31,12 +31,18 @@ const Wager = styled.div`
 
 const BetType = (props) => {
     
-    const handleBet = ({type, value} = {type: "", value: null}) => {
+    const handleBet = () => {
         props.handleBet({type: props.type, value: props.value})
     }
 
+    const handleRemove = (e) => {
+        e.preventDefault()
+        console.log('firing')
+        props.handleRemove({type: props.type, value: props.value} )
+    }
+
     return (
-        <BetSpace type={props.value} onClick={handleBet}>
+        <BetSpace type={props.value} onClick={handleBet} onContextMenu={handleRemove}>
             {props.bet && <Wager>{props.bet}</Wager>}
             {props.children}
         </BetSpace>

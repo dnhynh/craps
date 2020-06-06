@@ -48,6 +48,31 @@ const Craps = () => {
         }
     }
 
+    // Check game state and remove bet if valid
+    const handleRemove = (bet) => {
+        const {type, value} = bet
+        // Pass
+        if(type === "pass" && !point.value) {
+            removeBet(type)
+        }
+        // Dont
+        if(type === "dont" && !point.value) {
+            removeBet(type)
+        }
+        // Odds
+        if(type === "odds" && point.value && bets.pass && dice.turn === point.turn) {
+            removeBet(type)
+        }
+        // Nums
+        if(type === "nums" && point.value && value !== point) {
+            removeBet(type, value)
+        }
+        // Field
+        if(type === "field") {
+            removeBet(type)
+        }
+    }
+
     // Helper function places bet
     const placeBet = (type, value) => {
         if(bank.wager<= bank.chips) {
@@ -67,6 +92,31 @@ const Craps = () => {
             setBank({
                 chips: bank.chips - bank.wager,
                 wager: bank.wager
+            })
+        }
+    }
+
+    const removeBet = (type, value) => {
+        if(type === "nums") {
+            setBank({
+                chips: bank.chips + bets.nums[value],
+                wager: bank.wager
+            })
+            setBets((prevBets) => {
+                const newNums = {...prevBets.nums}
+                newNums[value] = null
+                return {...prevBets, nums: newNums}
+            })
+        }
+        else {
+            setBank ({
+                chips: bank.chips + bets[type],
+                wager: bank.wager 
+            })
+            setBets((prevBets) => {
+                const newBets = {...prevBets}
+                newBets[type] = null
+                return newBets
             })
         }
     }
@@ -106,31 +156,32 @@ const Craps = () => {
     }
 
     const resolveBets = (result) => {
-        // Track net gain or loss
-        let net = 0 - bets.pass - bets.odds - bets.dont
-        //pass
-        if(result === "pass") {
-            if(bets.pass) {
-                net += bets.pass * 2 
-            }
+        // Track total gain
+        let net = 0
+        // Pass
+        if(result === "pass" && bets.pass) {
+            net += bets.pass * 2
             if(bets.odds) {
-                
-            }
-            if(bets.dont) {
-                net -= bets.dont
+                if(dice.total === 4 || dice.total === 10) {
+                    net += bets.odds * 3
+                }
+                if(dice.total === 5 || dice.total === 9) {
+                    net += bets.odds * 2.5 
+                }
+                if(dice.total === 6 || dice.total === 8) {
+                    net += bets.odds * 2.2 
+                }
             }
         }
-        //dont
+        // Dont Pass
         if(result === "dont") {
-            if(bets.pass) {
-                
-            }
             if(bets.dont) {
                 net += bets.dont * 2
             }
         }
         // Only set new bank if net greater or less than 0
         if(net) {
+            window.alert(net)
             setBank((prevBank) => {
                 const newBank = {
                     ...prevBank,
@@ -185,14 +236,14 @@ const Craps = () => {
         <>
             <div className="game-container">
                 <div className="table">
-                    <NumBets nums={bets.nums} handleBet={handleBet} bets={bets.nums}/>
-                    <BetType type="field" bet={bets.field} handleBet={handleBet}>
+                    <NumBets nums={bets.nums} handleBet={handleBet} handleRemove={handleRemove} bets={bets.nums}/>
+                    <BetType type="field" bet={bets.field} handleBet={handleBet} handleRemove={handleRemove}>
                         The Field
                         <p className="field-nums">2 3 4 9 10 11 12</p>
                     </BetType>
-                    <BetType type="dont" bet={bets.dont} handleBet={handleBet}>Do not Pass</BetType>
-                    <BetType type="pass" bet={bets.pass} handleBet={handleBet}>Pass Line</BetType>
-                    <BetType type="odds" bet={bets.odds} handleBet={handleBet}>Odds</BetType>
+                    <BetType type="dont" bet={bets.dont} handleBet={handleBet} handleRemove={handleRemove}>Do not Pass</BetType>
+                    <BetType type="pass" bet={bets.pass} handleBet={handleBet} handleRemove={handleRemove}>Pass Line</BetType>
+                    <BetType type="odds" bet={bets.odds} handleBet={handleBet} handleRemove={handleRemove}>Odds</BetType>
                 </div>
             </div>
             <Interface point={point} roll={rollDice} changeWager={adjustBet} dice={dice} bank={bank}/>
