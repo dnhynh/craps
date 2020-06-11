@@ -3,25 +3,39 @@ import Interface from "./Interface"
 import BetType from "./BetType"
 import NumBets from "./NumBets"
 import chipSound from "../static/chip_sound.mp3"
+import moneySound from "../static/money_sound.mp3"
 const cs = new Audio(chipSound)
+const ms = new Audio(moneySound)
 
 const Craps = () => {
+    const fieldRolls = [2, 3, 4, 9, 10, 11, 12]
     const emptyBoard = {
         pass: null, 
         dont: null, 
         field: null,
         nums: {
             10: null,
-            "NINE": null,
+            9: null,
             8: null,
-            "SIX": null,
+            6: null,
             5: null,
             4: null
         },
         odds: null
     }
-    const noPoint = {value: null, turn: null}
+    const resetPoint = {value: null, turn: null}
     const [bets, setBets] = useState(emptyBoard)
+    const [bank, setBank] = useState({
+        chips: 100,
+        wager: 10,
+    })
+    const [point, setPoint] = useState({value: null, turn: null})
+    const [dice, setDice] = useState({
+        first: null,
+        second: null,
+        total: null,
+        turn: 0
+    })
 
     // Check game state and place bet if valid
     const handleBet = (bet) => {
@@ -31,7 +45,7 @@ const Craps = () => {
             // If remove boolean is passed remove bet instead
             remove ? removeBet(type) : placeBet(type)
         }
-        // Dont
+        // Dont Pass
         if(type === "dont" && !point.value) {
             remove ? removeBet(type) : placeBet(type)
         }
@@ -40,7 +54,7 @@ const Craps = () => {
             remove ? removeBet(type) : placeBet(type)
         }
         // Nums
-        if(type === "nums" && point.value && value !== point) {
+        if(type === "nums" && point.value != value) {
             remove ? removeBet(type, value) : placeBet(type, value)
         }
         // Field
@@ -72,6 +86,7 @@ const Craps = () => {
         }
     }
 
+    // Helper function removes bet
     const removeBet = (type, value) => {
         if(type === "nums") {
             setBank({
@@ -111,14 +126,6 @@ const Craps = () => {
         })
     }
 
-    const [point, setPoint] = useState({value: null, turn: null})
-    const [dice, setDice] = useState({
-        first: null,
-        second: null,
-        total: null,
-        turn: 0
-    })
-
     const adjustBet = (value) => {
         if(bank.wager + value <= bank.chips && bank.wager + value > 0) {
             setBank((prevBank) => {
@@ -134,9 +141,26 @@ const Craps = () => {
     const resolveBets = (result) => {
         // Track total gain
         let net = 0
+        // Check Field
+        if(bets.field && fieldRolls.includes(dice.total)) {
+            net += bets.field
+            // pay 2 to 1 for roll of two and twelve
+            if(dice.total === 2 || dice.total === 12) net += bets.field
+        }
+        else {
+            setBets((prevBets) => ({...prevBets, field: null}))
+        }
+        if(result === "neutral") {
+            // Payout any number bet
+            for(let num in bets.nums) {
+                if(bets.nums[num] && dice.total == num) {
+                    net += bets.nums[num]
+                }
+            }
+        }
         // Pass
         if(result === "pass" && bets.pass) {
-            net += bets.pass * 2
+            net += bets.pass
             if(bets.odds) {
                 if(dice.total === 4 || dice.total === 10) {
                     net += bets.odds * 3
@@ -148,16 +172,24 @@ const Craps = () => {
                     net += bets.odds * 2.2 
                 }
             }
+            if(bets.dont) {
+                net += bets.dont
+            }
+            setBets((prevBets) => {
+                const newBets = {...prevBets, odds: null, field: null, dont: null}
+                return newBets
+            })
         }
         // Dont Pass
         if(result === "dont") {
             if(bets.dont) {
                 net += bets.dont * 2
             }
+            setBets(emptyBoard)
         }
         // Only set new bank if net greater or less than 0
         if(net) {
-            window.alert(net)
+            net > 0 && ms.play()
             setBank((prevBank) => {
                 const newBank = {
                     ...prevBank,
@@ -166,43 +198,36 @@ const Craps = () => {
                 return newBank
             })
         }
-        // Reset Board
-        setBets(emptyBoard)
-        //odds
-        //nums
-        //field
     }
-
-    const [bank, setBank] = useState({
-        chips: 100,
-        wager: 10,
-    })
 
     useEffect(() => {
         // Initial Roll
         if(!point.value) {
             if(dice.total === 7 || dice.total === 11) {
                 resolveBets('pass')
-                setPoint(noPoint)
+                setPoint(resetPoint)
             }
             else if(dice.total === 2 || dice.total === 3 || dice.total === 12) {
-                resolveBets(false, dice.total)
                 resolveBets('dont')
-                setPoint(noPoint)
+                setPoint(resetPoint)
             }
             else {
                 setPoint({value: dice.total, turn: dice.turn})
+                resolveBets('neutral')
             }
         }
         // Point is Set
         else if(point.value) {
             if(dice.total === point.value) {
-                setPoint(noPoint)
+                setPoint(resetPoint)
                 resolveBets('pass')
             }
             if(dice.total === 7) {
                 resolveBets('dont')
-                setPoint(noPoint)
+                setPoint(resetPoint)
+            }
+            else {
+                resolveBets('neutral')
             }
         }
     }, // eslint-disable-next-line

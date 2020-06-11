@@ -2,8 +2,6 @@ import React from "react"
 import BetType from "./BetType"
 import styled from "styled-components"
 
-const nums = [10, "NINE", 8, "SIX", 5, 4]
-
 const NumsRow = styled.div`
     display: flex;
     width: 100%;
@@ -12,10 +10,21 @@ const NumsRow = styled.div`
     }
 `
 
+const labels = {
+    4: 4,
+    5: 5,
+    6: "SIX",
+    8: 8,
+    9: "NINE",
+    10: 10
+}
+
 const NumBets = (props) => {
-    const bets = nums.map((num) => (
-    <BetType key={num} handleBet={props.handleBet} bet={props.bets[num]} type="nums" value={num}>{num}</BetType>
-    ))
+    const bets = []
+    for(let num in props.bets) {
+        bets.push(<BetType key={num} handleBet={props.handleBet} bet={props.bets[num]} type="nums" value={num}>
+            {labels[num]}</BetType>)
+    }
     return (
         <NumsRow>
             {bets}
