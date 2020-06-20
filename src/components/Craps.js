@@ -1,11 +1,23 @@
 import React, {useState, useEffect} from "react"
+import styled from "styled-components"
 import Interface from "./Interface"
 import BetType from "./BetType"
 import NumBets from "./NumBets"
 import chipSound from "../static/chip_sound.mp3"
 import moneySound from "../static/money_sound.mp3"
+import loseSound from "../static/sweep.mp3"
 const cs = new Audio(chipSound)
 const ms = new Audio(moneySound)
+const ls = new Audio(loseSound)
+const Table = styled.div`
+    width: 700px;
+    border: 2px solid black;
+    margin: 0 auto;
+    background-color: #477148;
+    font-size: 1.5rem;
+    color: #fff;
+    line-height: 1.5;
+`
 
 const Craps = () => {
     const fieldRolls = [2, 3, 4, 9, 10, 11, 12]
@@ -36,6 +48,7 @@ const Craps = () => {
         total: null,
         turn: 0
     })
+    const [net, setNet] = useState(0)
 
     // Check game state and place bet if valid
     const handleBet = (bet) => {
@@ -185,11 +198,14 @@ const Craps = () => {
             if(bets.dont) {
                 net += bets.dont * 2
             }
+            net === 0 && ls.play()
             setBets(emptyBoard)
         }
         // Only set new bank if net greater or less than 0
         if(net) {
-            net > 0 && ms.play()
+            ms.play()
+            setNet(net)
+            setTimeout(() => setNet(0), 3000)
             setBank((prevBank) => {
                 const newBank = {
                     ...prevBank,
@@ -204,12 +220,12 @@ const Craps = () => {
         // Initial Roll
         if(!point.value) {
             if(dice.total === 7 || dice.total === 11) {
-                resolveBets('pass')
                 setPoint(resetPoint)
+                resolveBets('pass')
             }
             else if(dice.total === 2 || dice.total === 3 || dice.total === 12) {
-                resolveBets('dont')
                 setPoint(resetPoint)
+                resolveBets('dont')
             }
             else {
                 setPoint({value: dice.total, turn: dice.turn})
@@ -223,8 +239,8 @@ const Craps = () => {
                 resolveBets('pass')
             }
             if(dice.total === 7) {
-                resolveBets('dont')
                 setPoint(resetPoint)
+                resolveBets('dont')
             }
             else {
                 resolveBets('neutral')
@@ -236,18 +252,18 @@ const Craps = () => {
     return (
         <>
             <div className="game-container">
-                <div className="table">
-                    <NumBets nums={bets.nums} handleBet={handleBet} bets={bets.nums}/>
+                <Table>
+                    <NumBets nums={bets.nums} handleBet={handleBet} point={point.value} bets={bets.nums}/>
                     <BetType type="field" bet={bets.field} handleBet={handleBet}>
                         The Field
-                        <p className="field-nums">2 3 4 9 10 11 12</p>
+                        <p style={{fontSize: "1rem"}}>2 3 4 9 10 11 12</p>
                     </BetType>
                     <BetType type="dont" bet={bets.dont} handleBet={handleBet}>Do not Pass</BetType>
                     <BetType type="pass" bet={bets.pass} handleBet={handleBet}>Pass Line</BetType>
                     <BetType type="odds" bet={bets.odds} handleBet={handleBet}>Odds</BetType>
-                </div>
+                </Table>
             </div>
-            <Interface point={point} roll={rollDice} changeWager={adjustBet} dice={dice} bank={bank}/>
+            <Interface net={net} point={point} roll={rollDice} changeWager={adjustBet} dice={dice} bank={bank}/>
         </>
     )
 }

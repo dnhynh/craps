@@ -22,8 +22,16 @@ const labels = {
 const NumBets = (props) => {
     const bets = []
     for(let num in props.bets) {
-        bets.push(<BetType key={num} handleBet={props.handleBet} bet={props.bets[num]} type="nums" value={num}>
-            {labels[num]}</BetType>)
+        bets.push(
+            <BetType 
+                key={num} 
+                handleBet={props.handleBet} 
+                bet={props.bets[num]} 
+                type="nums" 
+                value={num} 
+            >
+                {labels[num]}
+            </BetType>)
     }
     return (
         <NumsRow>

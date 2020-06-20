@@ -8,12 +8,16 @@ const BetSpace = styled.div`
     cursor: pointer;
     position: relative;
 
-    &:hover {
-        border: 2px solid black;
+    &:hover:not(.point) {
+        background-color: #597f5a;
     }
 
     &.num {
         border-right: 1px solid gray;
+    }
+
+    &.point {
+        border: 2px solid #fff;
     }
 `
 const Wager = styled.div`
@@ -40,8 +44,19 @@ const BetType = (props) => {
         props.handleBet({type: props.type, value: props.value, remove: true})
     }
 
+    const style = {};
+
+    if(props.point && props.point == props.value) {
+        style.border = "1px solid #fff"
+    }
+
     return (
-        <BetSpace type={props.value} onClick={handleBet} onContextMenu={handleRemove}>
+        <BetSpace 
+            type={props.value} 
+            onClick={handleBet} 
+            onContextMenu={handleRemove}
+            style={style}
+        >
             {props.bet && <Wager>{props.bet}</Wager>}
             {props.children}
         </BetSpace>
