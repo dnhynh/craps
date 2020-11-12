@@ -1,10 +1,7 @@
 import React from "react"
 import styled, {keyframes} from "styled-components"
 import PropTypes from 'prop-types'
-import rollSound from "../static/roll_sound.mp3"
 import Dice from "./Dice"
-
-const rs = new Audio(rollSound)
 
 const RollButton = styled.button`
     font-family: "Press Start 2P";
@@ -33,21 +30,34 @@ const AdjustBetButton = styled.button`
 `
 
 const Container = styled.div`
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
 `
+const WinningsBox = styled.div`
+    align-self: normal;
+    position: relative;
+    min-width: 150px;
+    margin: 0 20px;
+`
+
 const fadeOut = keyframes`
     0% {
         opacity:1;
+        top: 20px;
+        bottom: 0;
     }
     100% {
         opacity:0;
+        top: 0;
+        bottom: 0;
     }
 `
 
 const Winnings = styled.p`
+    position: absolute;
     color: #00b300;
     font-size: 2rem;
     opacity: 0;
@@ -68,7 +78,6 @@ const Interface = (props) => {
     }
 
     const rollDice = () => {
-        rs.play()
         props.roll()
     }
 
@@ -79,9 +88,9 @@ const Interface = (props) => {
                 <p>Current Roll: {props.dice.total}</p>
             </div>
             <Container>
-                <div>
+                <WinningsBox>
                     <Winnings className={props.net > 0 ? "fade" : null}>+ {props.net}</Winnings>
-                </div>
+                </WinningsBox>
                 <div>
                     <p style={{marginRight: "10px"}}>Chip Stack: {props.bank.chips}</p>
                     <p style={{marginRight: "10px"}}>Bet: {props.bank.wager}</p>
