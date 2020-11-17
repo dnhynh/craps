@@ -4,7 +4,7 @@ import {useState} from "react"
     Custom hook returns all game logic state functions
 */
 
-import {chipSound, loseSound, moneySound, rollSound} from "../components/Sounds"
+import {chipSound, loseSound, moneySound, rollSound} from "./Sounds"
 
 const useCrapsLogic = () => {
     // Variables for board resets
